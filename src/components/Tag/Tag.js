@@ -1,32 +1,31 @@
-import React, { Component } from 'react';
-import { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 const propTypes = {
-  tag: PropTypes.shape({
-    id: PropTypes.number,
-    text: PropTypes.string,
-  }).isRequired,
+  text: PropTypes.string,
+  isActive: PropTypes.boolean.isRequired,
   onClickTag: PropTypes.func.isRequired,
 };
 
-const Tag = props => {
-  const {
-    tag: { id, text },
-    onClickTag,
-  } = props;
+const defaultProps = {
+  isActive: false,
+};
 
-  const handleChooseTag = () => {
-    onClickTag(id);
-  };
+const Tag = props => {
+  const { text, isActive, onClickTag } = props;
 
   return (
-    <div className="tag" onClick={handleChooseTag}>
+    <button
+      type="button"
+      className={isActive ? 'tag_active' : 'tag'}
+      onClick={onClickTag}
+    >
       <span className="tag__text">{text}</span>
-    </div>
+    </button>
   );
 };
 
 Tag.propTypes = propTypes;
+Tag.defaultProps = defaultProps;
 
 export default Tag;
