@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 const propTypes = {
@@ -9,25 +10,22 @@ const propTypes = {
   onClickTag: PropTypes.func.isRequired,
 };
 
-class Tag extends Component {
-  handleChooseTag = () => {
-    const {
-      tag: { id },
-    } = this.props;
-    this.props.onClickTag(id);
+const Tag = props => {
+  const {
+    tag: { id, text },
+    onClickTag,
+  } = props;
+
+  const handleChooseTag = () => {
+    onClickTag(id);
   };
 
-  render() {
-    const {
-      tag: { text },
-    } = this.props;
-    return (
-      <div className="tag" onClick={this.handleChooseTag}>
-        <span className="tag__text">{text}</span>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="tag" onClick={handleChooseTag}>
+      <span className="tag__text">{text}</span>
+    </div>
+  );
+};
 
 Tag.propTypes = propTypes;
 
