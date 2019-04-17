@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 import Tag from '../../Tag';
 
 const propTypes = {
-  input: PropTypes.object.isRequired,
+  input: PropTypes.object,
+  editMode: PropTypes.bool.isRequired,
   tags: PropTypes.arrayOf(
     PropTypes.shape({
       text: PropTypes.string.isRequired,
@@ -17,13 +18,19 @@ const propTypes = {
 const TagList = props => {
   const {
     tags,
+    editMode,
     input: { value: listActive },
   } = props;
 
   const handleClickTag = tagId => {
     const {
       input: { value: listActive, onChange },
+      editMode,
     } = this.props;
+
+    if (!editMode) {
+      return;
+    }
 
     let newListActive;
 
