@@ -7,7 +7,9 @@ import { bindActionCreators } from 'redux';
 
 import { getMarker } from '../../selectors';
 import { editMarker, deleteMarker } from '../../reducers/markers/actions';
-import TagList from '../Final-Form/TagList/TagList';
+import { addTag } from '../../reducers/tags/actions';
+import TagList from '../../components/Final-Form/TagList';
+import CreateTag from '../../components/CreateTag';
 
 const propTypes = {
   input: PropTypes.object.isRequired,
@@ -24,20 +26,27 @@ const propTypes = {
     ),
   }),
   editMarker: PropTypes.func.isRequired,
+  deleteMarker: PropTypes.func.isRequired,
 };
 
 const Marker = props => {
   const {
     markerId,
-    marker: { title, uri, atCreated },
     initialFormValues,
     editMarker,
+    deleteMarker,
+    addTag,
   } = props;
+  const { title, uri, atCreated } = props.initialFormValues;
 
   const [editMode, changeEditMode] = useState(false);
 
   const handleSubmit = values => {
     editMarker(values);
+  };
+
+  const handleClickTag = value => {
+    addTag(value);
   };
 
   return (
@@ -65,7 +74,7 @@ const Marker = props => {
               </form>
             )}
           />
-          <CreateTag />
+          <CreateTag onClickAddTag={handleClickTag} />
         </div>
       ) : (
         <div className="marker__content">
@@ -88,7 +97,9 @@ const Marker = props => {
         className="marker__delete-button"
         type="button"
         onClick={() => deleteMarker(markerId)}
-      />
+      >
+        <span className="delete-button__text">x</span>
+      </button>
     </div>
   );
 };
@@ -112,6 +123,7 @@ const mapDispatchToProps = dispatch =>
     {
       editMarker,
       deleteMarker,
+      addTag,
     },
     dispatch
   );
