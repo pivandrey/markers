@@ -11,7 +11,9 @@ const MarkerList = props => {
 
   return (
     <div className="marker-list">
-      {markers.map(marker => renderMarker(marker))}
+      {markers.map(marker => (
+        <React.Fragment key={marker.id}>{renderMarker(marker)}</React.Fragment>
+      ))}
     </div>
   );
 };

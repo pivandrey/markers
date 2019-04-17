@@ -1,31 +1,35 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+
+import { getTag } from '../../selectors';
 
 const propTypes = {
-  text: PropTypes.string,
-  isActive: PropTypes.boolean.isRequired,
-  onClickTag: PropTypes.func.isRequired,
-};
-
-const defaultProps = {
-  isActive: false,
+  tagId: PropTypes.number,
 };
 
 const Tag = props => {
-  const { text, isActive, onClickTag } = props;
+  const { tag } = props;
 
   return (
-    <button
-      type="button"
-      className={isActive ? 'tag_active' : 'tag'}
-      onClick={onClickTag}
-    >
-      <span className="tag__text">{text}</span>
-    </button>
+    <div className="tag" style={{ backgroundColor: tag.color }}>
+      <span className="tag__text">{tag.text}</span>
+    </div>
   );
 };
 
 Tag.propTypes = propTypes;
-Tag.defaultProps = defaultProps;
 
-export default Tag;
+const makeMapStateToProps = () => {
+  const getTagById = getTag();
+
+  const mapStateToProps = (state, props) => {
+    const tag = getTagById(state, props);
+    return {
+      tag,
+    };
+  };
+  return mapStateToProps;
+};
+
+export default connect(makeMapStateToProps)(Tag);

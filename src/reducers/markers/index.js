@@ -1,3 +1,3 @@
-import tags from './tags';
+import markers from './markers';
 
-export default tags;
+export default markers;

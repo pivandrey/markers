@@ -6,7 +6,7 @@ const propTypes = {
   onClickAddTag: PropTypes.func.isRequired,
 };
 
-const CreateTag = props => {
+const AddTag = props => {
   const { onClickAddTag } = props;
   const [value, changeValue] = useState('');
 
@@ -29,6 +29,6 @@ const CreateTag = props => {
   );
 };
 
-CreateTag.propTypes = propTypes;
+AddTag.propTypes = propTypes;
 
-export default CreateTag;
+export default AddTag;
