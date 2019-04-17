@@ -12,7 +12,6 @@ import TagList from '../../components/Final-Form/TagList';
 import CreateTag from '../../components/CreateTag';
 
 const propTypes = {
-  input: PropTypes.object.isRequired,
   markerId: PropTypes.number.isRequired,
   initialFormValues: PropTypes.shape({
     title: PropTypes.string.isRequired,
