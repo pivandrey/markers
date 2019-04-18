@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Form, Field } from 'react-final-form';
 import { bindActionCreators } from 'redux';
 
-import { getMarker, getTextTagForMarker } from '../../selectors';
+import { getMarker, getTextTagForMarker, getTags } from '../../selectors';
 import { editMarker, deleteMarker } from '../../reducers/markers/actions';
 import { createTag } from '../../reducers/tags/actions';
 import { addTag } from '../../reducers/tags/actions';
@@ -38,6 +38,7 @@ const Marker = props => {
     createTag,
     initialFormValues,
     textTags,
+    allTags,
   } = props;
   const { title, uri, atCreated, tags } = props.initialFormValues;
 
@@ -49,12 +50,12 @@ const Marker = props => {
     let newTags = [];
     const parseTags = values.tags ? values.tags.split(';') : [];
     parseTags.map(newTag => {
-      if (tags.length === 0) {
+      if (allTags.length === 0) {
         newTags.push(createTag(newTag));
       } else {
-        const equalTags = tags.filter((oldTag, index) => {
+        const equalTags = allTags.filter((oldTag, index) => {
           if (oldTag.text === newTag) {
-            newTags.push(tags[index].id);
+            newTags.push(allTags[index].id);
             return oldTag.id;
           }
         });
@@ -163,9 +164,11 @@ const makeMapStateToProps = () => {
   const mapStateToProps = (state, props) => {
     const initialFormValues = getMarkerById(state, props);
     const textTags = getTextTag(state, props);
+    const allTags = getTags(state);
     return {
       initialFormValues,
       textTags,
+      allTags,
     };
   };
   return mapStateToProps;
