@@ -32,6 +32,11 @@ export default handleActions(
       foundMarkersByTitle: action.payload.foundMarkersByTitle,
       foundMarkersByTags: action.payload.foundMarkersByTags,
     }),
+    [TYPES.CLEAR_FOUND_MARKERS]: (state, action) => ({
+      ...state,
+      foundMarkersByTitle: [],
+      foundMarkersByTags: [],
+    }),
   },
   initialState
 );

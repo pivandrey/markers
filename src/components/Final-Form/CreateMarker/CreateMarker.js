@@ -13,9 +13,9 @@ const CreateMarker = props => {
   const { addMarker, tags, createTag } = props;
   const [isShowCreator, handleShowCreator] = useState(false);
 
-// валидация на непустую строку, превращение строки в массив,
-// проверка каждого элемента на уникальность,
-// в случае уникальности создание в редюсере нового тега
+  // валидация на непустую строку, превращение строки в массив,
+  // проверка каждого элемента на уникальность,
+  // в случае уникальности создание в редюсере нового тега
 
   const handleSubmitMarker = values => {
     let newTags = [];
@@ -52,6 +52,17 @@ const CreateMarker = props => {
 
   return (
     <div className="create-marker">
+      <div className="create-marker__switcher">
+        <button
+          className="switcher__button"
+          type="button"
+          onClick={() => handleShowCreator(!isShowCreator)}
+        >
+          <span className="button__text">
+            {isShowCreator ? 'Cancel' : 'Create Marker'}
+          </span>
+        </button>
+      </div>
       {isShowCreator && (
         <div className="create-marker__creator">
           <Form
@@ -74,6 +85,7 @@ const CreateMarker = props => {
                     component="input"
                     type="text"
                     placeholder="URL"
+                    className="form__input"
                   />
                 </div>
                 <div className="form__title">
@@ -82,6 +94,7 @@ const CreateMarker = props => {
                     component="input"
                     type="text"
                     placeholder="Title"
+                    className="form__input"
                   />
                 </div>
                 <div className="content_tags">
@@ -90,25 +103,17 @@ const CreateMarker = props => {
                     component="input"
                     type="text"
                     placeholder="tags"
+                    className="form__input"
                   />
                 </div>
                 <button type="submit" className="form__save">
-                  Save
+                  Create
                 </button>
               </form>
             )}
           />
         </div>
       )}
-      <div className="create-marker__switcher">
-        <button
-          className="switcher__button"
-          type="button"
-          onClick={() => handleShowCreator(!isShowCreator)}
-        >
-          <span className="button__text">Create Marker</span>
-        </button>
-      </div>
     </div>
   );
 };
