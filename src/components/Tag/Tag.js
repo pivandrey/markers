@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { getTag } from '../../selectors';
 
 const propTypes = {
-  tagId: PropTypes.number,
+  tagId: PropTypes.string,
 };
 
 const Tag = props => {
