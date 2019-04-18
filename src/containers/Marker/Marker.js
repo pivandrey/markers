@@ -5,15 +5,15 @@ import { connect } from 'react-redux';
 import { Form, Field } from 'react-final-form';
 import { bindActionCreators } from 'redux';
 
-import { getMarker, getTagsById } from '../../selectors';
+import { getMarker, getTextTagForMarker } from '../../selectors';
 import { editMarker, deleteMarker } from '../../reducers/markers/actions';
 import { createTag } from '../../reducers/tags/actions';
 import { addTag } from '../../reducers/tags/actions';
 import TagList from '../../components/TagList';
-import AddTag from '../../components/Final-Form/AddTag';
 
 const propTypes = {
   markerId: PropTypes.string.isRequired,
+  textTags: PropTypes.array.isRequired,
   initialFormValues: PropTypes.shape({
     title: PropTypes.string.isRequired,
     uri: PropTypes.number.isRequired,
@@ -31,15 +31,21 @@ const propTypes = {
 };
 
 const Marker = props => {
-  const { markerId, marker, editMarker, deleteMarker, createTag } = props;
-  // const { title, uri, atCreated } = props.initialFormValues;
-
-  const { title, uri, atCreated, tags } = props.marker;
-  console.log(marker);
+  const {
+    markerId,
+    editMarker,
+    deleteMarker,
+    createTag,
+    initialFormValues,
+    textTags,
+  } = props;
+  const { title, uri, atCreated, tags } = props.initialFormValues;
 
   const [editMode, changeEditMode] = useState(false);
 
-  const handleSubmit = values => {
+  // аналогично сабмиту в CreateMarker
+
+  const handleSubmitMarker = values => {
     let newTags = [];
     const parseTags = values.tags ? values.tags.split(';') : [];
     parseTags.map(newTag => {
@@ -52,7 +58,7 @@ const Marker = props => {
             return oldTag.id;
           }
         });
-        if (!equalTags) {
+        if (equalTags.length === 0) {
           newTags.push(createTag(newTag));
         }
       }
@@ -61,29 +67,46 @@ const Marker = props => {
     changeEditMode(false);
   };
 
+  const validateValues = values => {
+    const errors = {};
+    if (!values.hasOwnProperty('uri')) {
+      errors.uri = 'Enter URL';
+    }
+    if (!values.hasOwnProperty('title')) {
+      errors.title = 'Enter title';
+    }
+  };
+
   return (
     <div className="marker">
       {editMode ? (
         <div className="marker__content_edit">
           <Form
-            onSubmit={handleSubmit}
-            // initialValues={initialFormValues}
+            onSubmit={handleSubmitMarker}
+            validate={validateValues}
+            // так как теги в закладке хранятся в виде массива ID,
+            // в селекторе getTextTag преобразовываем ID в текст и
+            // превращаем массив в строку с разделителем ";"
+            initialValues={{
+              ...initialFormValues,
+              tags: textTags.join(';'),
+            }}
             render={({ handleSubmit }) => (
-              <form className="content_edit__form">
-                <div className="form__title">
-                  <Field
-                    name="title"
-                    component="input"
-                    type="text"
-                    placeholder="Title"
-                  />
-                </div>
+              <form className="content_edit__form" onSubmit={handleSubmit}>
                 <div className="form__uri">
                   <Field
                     name="uri"
                     component="input"
                     type="text"
                     placeholder="URL"
+                  />
+                </div>
+                <div className="form__title">
+                  <Field
+                    name="title"
+                    component="input"
+                    type="text"
+                    placeholder="Title"
                   />
                 </div>
                 <div className="content_tags">
@@ -94,7 +117,7 @@ const Marker = props => {
                     placeholder="Tags"
                   />
                 </div>
-                <button onClick={handleSubmit} className="form__save">
+                <button type="submit" className="form__save">
                   Save
                 </button>
               </form>
@@ -114,7 +137,7 @@ const Marker = props => {
       <button
         className="marker__edit-mode-button"
         type="button"
-        onClick={() => changeEditMode(true)}
+        onClick={() => changeEditMode(!editMode)}
       >
         <span className="edit-mode-button__text">Edit</span>
       </button>
@@ -131,13 +154,18 @@ const Marker = props => {
 
 Marker.propTypes = propTypes;
 
+// передаем в селектор ID и получаем закладку,
+// аналогично с текстами тегов для этой закладки
 const makeMapStateToProps = () => {
   const getMarkerById = getMarker();
+  const getTextTag = getTextTagForMarker();
 
   const mapStateToProps = (state, props) => {
     const initialFormValues = getMarkerById(state, props);
+    const textTags = getTextTag(state, props);
     return {
       initialFormValues,
+      textTags,
     };
   };
   return mapStateToProps;

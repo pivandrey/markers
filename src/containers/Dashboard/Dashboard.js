@@ -23,9 +23,7 @@ const Dashboard = props => {
       <div className="dashboard__content">
         <MarkerList
           markers={markers}
-          renderMarker={marker => (
-            <Marker marker={marker} markerId={marker.id} />
-          )}
+          renderMarker={marker => <Marker markerId={marker.id} />}
         />
         <CreateMarker
           addMarker={values => createMarker(values)}

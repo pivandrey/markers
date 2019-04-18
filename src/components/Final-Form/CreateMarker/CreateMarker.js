@@ -13,7 +13,11 @@ const CreateMarker = props => {
   const { addMarker, tags, createTag } = props;
   const [isShowCreator, handleShowCreator] = useState(false);
 
-  const handleSubmit = values => {
+// валидация на непустую строку, превращение строки в массив,
+// проверка каждого элемента на уникальность,
+// в случае уникальности создание в редюсере нового тега
+
+  const handleSubmitMarker = values => {
     let newTags = [];
     const parseTags = values.tags ? values.tags.split(';') : [];
     parseTags.map(newTag => {
@@ -26,12 +30,24 @@ const CreateMarker = props => {
             return oldTag.id;
           }
         });
-        if (!equalTags) {
+        if (equalTags.length === 0) {
           newTags.push(createTag(newTag));
         }
       }
     });
     addMarker({ ...values, tags: newTags });
+    handleShowCreator(false);
+  };
+
+  const validateValues = values => {
+    const errors = {};
+    if (!values.hasOwnProperty('uri')) {
+      errors.uri = 'Enter URL';
+    }
+    if (!values.hasOwnProperty('title')) {
+      errors.title = 'Enter title';
+    }
+    return errors;
   };
 
   return (
@@ -39,23 +55,33 @@ const CreateMarker = props => {
       {isShowCreator && (
         <div className="create-marker__creator">
           <Form
-            onSubmit={handleSubmit}
-            render={({ handleSubmit }) => (
-              <form className="content_edit__form">
-                <div className="form__title">
-                  <Field
-                    name="title"
-                    component="input"
-                    type="text"
-                    placeholder="Title"
-                  />
-                </div>
+            onSubmit={handleSubmitMarker}
+            validate={validateValues}
+            render={({ handleSubmit, form }) => (
+              <form
+                className="content_edit__form"
+                onSubmit={async event => {
+                  const error = await handleSubmit(event);
+                  if (error) {
+                    return error;
+                  }
+                  form.reset();
+                }}
+              >
                 <div className="form__uri">
                   <Field
                     name="uri"
                     component="input"
                     type="text"
                     placeholder="URL"
+                  />
+                </div>
+                <div className="form__title">
+                  <Field
+                    name="title"
+                    component="input"
+                    type="text"
+                    placeholder="Title"
                   />
                 </div>
                 <div className="content_tags">
@@ -66,7 +92,7 @@ const CreateMarker = props => {
                     placeholder="tags"
                   />
                 </div>
-                <button onClick={handleSubmit} className="form__save">
+                <button type="submit" className="form__save">
                   Save
                 </button>
               </form>
