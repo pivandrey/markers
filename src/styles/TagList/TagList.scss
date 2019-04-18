@@ -1,0 +1,11 @@
+.tag-list {
+  .tags-list__content {
+    display: flex;
+    .tag {
+      margin-right: 3px;
+      &:last-of-type {
+        margin-right: 0;
+      }
+    }
+  }
+}

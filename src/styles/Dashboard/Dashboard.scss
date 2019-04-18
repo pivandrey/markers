@@ -1,0 +1,40 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  margin: 0 auto;
+  align-items: center;
+  .dashboard__search {
+    margin-bottom: 20px;
+    .search__input {
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+      outline: none;
+      padding: 5px 10px;
+      border: none;
+      background: #acacac;
+      color: #fff;
+      &::placeholder {
+        color: #ccc;
+      }
+    }
+    .search__button {
+      outline: none;
+      border: none;
+      background: lightblue;
+      height: 25px;
+      cursor: pointer;
+      margin: 0;
+      padding: 0;
+      width: 70px;
+      border-top-right-radius: 6px;
+      border-bottom-right-radius: 6px;
+    }
+  }
+  .dashboard__content {
+    display: flex;
+    .create-marker {
+      margin-right: 15px;
+    }
+  }
+}
