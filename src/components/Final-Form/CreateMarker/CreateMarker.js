@@ -1,17 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
 import { Form, Field } from 'react-final-form';
 
 const propTypes = {
   tags: PropTypes.array.isRequired,
+  foundTitle: PropTypes.string,
+  foundTags: PropTypes.string,
   addMarker: PropTypes.func.isRequired,
   createTag: PropTypes.func.isRequired,
+  getTitle: PropTypes.func.isRequired,
+  resetAutoFill: PropTypes.func.isRequired,
 };
 
 const CreateMarker = props => {
-  const { addMarker, tags, createTag } = props;
+  const {
+    addMarker,
+    tags,
+    createTag,
+    getTitle,
+    foundTitle,
+    foundTags,
+    resetAutoFill,
+  } = props;
   const [isShowCreator, handleShowCreator] = useState(false);
+  const [uri, onBlurUri] = useState('');
+
+  useEffect(() => {
+    resetAutoFill();
+  }, []);
 
   // валидация на непустую строку, превращение строки в массив,
   // проверка каждого элемента на уникальность,
@@ -37,17 +53,24 @@ const CreateMarker = props => {
     });
     addMarker({ ...values, tags: newTags });
     handleShowCreator(false);
+    onBlurUri('');
   };
 
   const validateValues = values => {
     const errors = {};
-    if (!values.hasOwnProperty('uri')) {
+    if (!values.hasOwnProperty('uri') || !values.uri) {
       errors.uri = 'Enter URL';
     }
-    if (!values.hasOwnProperty('title')) {
+    if (!values.hasOwnProperty('title') || !values.title) {
       errors.title = 'Enter title';
     }
     return errors;
+  };
+
+  const handleBlurUrl = async e => {
+    const url = e.currentTarget.value;
+    onBlurUri(url);
+    url && (await getTitle(url));
   };
 
   return (
@@ -67,6 +90,11 @@ const CreateMarker = props => {
         <div className="create-marker__creator">
           <Form
             onSubmit={handleSubmitMarker}
+            initialValues={{
+              title: foundTitle ? foundTitle : '',
+              uri: uri,
+              tags: foundTags ? foundTags : '',
+            }}
             validate={validateValues}
             render={({ handleSubmit, form }) => (
               <form
@@ -86,6 +114,7 @@ const CreateMarker = props => {
                     type="text"
                     placeholder="URL"
                     className="form__input"
+                    onBlur={handleBlurUrl}
                   />
                 </div>
                 <div className="form__title">

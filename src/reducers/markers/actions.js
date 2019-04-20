@@ -8,6 +8,9 @@ export const deleteMarker = createAction(TYPES.DELETE_MARKER);
 export const editMarker = createAction(TYPES.EDIT_MARKER);
 export const setFoundMarkers = createAction(TYPES.SET_FOUND_MARKERS);
 export const clearFoundMarkers = createAction(TYPES.CLEAR_FOUND_MARKERS);
+export const setTitle = createAction(TYPES.SET_TITLE);
+export const setTags = createAction(TYPES.SET_TAGS);
+export const resetAutoFill = createAction(TYPES.RESET_AUTO_FILL);
 
 export const createMarker = values => dispatch => {
   const id = Math.random()
@@ -42,4 +45,26 @@ export const searchMarkers = query => (dispatch, getState) => {
     }
   });
   dispatch(setFoundMarkers({ foundMarkersByTitle, foundMarkersByTags }));
+};
+
+export const getTitle = url => async dispatch => {
+  const proxyurl = 'https://cors-anywhere.herokuapp.com/';
+  const { titleText, descriptionText } = await fetch(proxyurl + url)
+    .then(response => response.text())
+    .then(html => {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const title = doc.querySelectorAll('title')[0];
+      const titleText = title.innerText;
+      const description = doc.querySelectorAll('meta');
+      let descriptionText = '';
+      for (let i = 0; i < description.length; i++) {
+        if (description[i].getAttribute('name') === 'description') {
+          descriptionText = description[i].getAttribute('content');
+        }
+      }
+      return { titleText, descriptionText };
+    });
+  dispatch(setTitle(titleText));
+  const parseDescription = descriptionText.split(/\s/).join(';');
+  dispatch(setTags(parseDescription));
 };

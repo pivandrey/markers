@@ -142,13 +142,15 @@ const Marker = props => {
       >
         <span className="edit-mode-button__text">Edit</span>
       </button>
-      <button
-        className="marker__delete-button"
-        type="button"
-        onClick={() => deleteMarker(markerId)}
-      >
-        <span className="delete-button__text">x</span>
-      </button>
+      {editMode && (
+        <button
+          className="marker__delete-button"
+          type="button"
+          onClick={() => deleteMarker(markerId)}
+        >
+          <span className="delete-button__text">x</span>
+        </button>
+      )}
     </div>
   );
 };
