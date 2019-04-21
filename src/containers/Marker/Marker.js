@@ -47,7 +47,7 @@ const Marker = props => {
 
   const handleSubmitMarker = values => {
     let newTags = [];
-    const parseTags = values.tags ? values.tags.split(';') : [];
+    const parseTags = values.tags ? values.tags.toLowerCase().split(';') : [];
     parseTags.map(newTag => {
       if (allTags.length === 0) {
         newTags.push(createTag(newTag));
@@ -69,10 +69,15 @@ const Marker = props => {
 
   const validateValues = values => {
     const errors = {};
-    if (!values.hasOwnProperty('uri')) {
+    if (!values.hasOwnProperty('uri') || !values.uri) {
+      errors.uri = 'Enter URL';
+    } else if (
+      values.uri &&
+      !values.uri.match(/^(ftp|http|https):\/\/[^ "]+$/)
+    ) {
       errors.uri = 'Enter URL';
     }
-    if (!values.hasOwnProperty('title')) {
+    if (!values.hasOwnProperty('title') || !values.title) {
       errors.title = 'Enter title';
     }
   };

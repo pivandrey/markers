@@ -24,6 +24,7 @@ const CreateMarker = props => {
   } = props;
   const [isShowCreator, handleShowCreator] = useState(false);
   const [uri, onBlurUri] = useState('');
+  const [isValid, validateUri] = useState(false);
 
   useEffect(() => {
     resetAutoFill();
@@ -35,7 +36,7 @@ const CreateMarker = props => {
 
   const handleSubmitMarker = values => {
     let newTags = [];
-    const parseTags = values.tags ? values.tags.split(';') : [];
+    const parseTags = values.tags ? values.tags.toLowerCase().split(';') : [];
     parseTags.map(newTag => {
       if (tags.length === 0) {
         newTags.push(createTag(newTag));
@@ -60,6 +61,15 @@ const CreateMarker = props => {
     const errors = {};
     if (!values.hasOwnProperty('uri') || !values.uri) {
       errors.uri = 'Enter URL';
+      validateUri(false);
+    } else if (
+      values.uri &&
+      !values.uri.match(/^(ftp|http|https):\/\/[^ "]+$/)
+    ) {
+      errors.uri = 'Enter URL';
+      validateUri(false);
+    } else {
+      validateUri(true);
     }
     if (!values.hasOwnProperty('title') || !values.title) {
       errors.title = 'Enter title';
@@ -69,8 +79,8 @@ const CreateMarker = props => {
 
   const handleBlurUrl = async e => {
     const url = e.currentTarget.value;
-    onBlurUri(url);
-    url && (await getTitle(url));
+    isValid && onBlurUri(url);
+    isValid && url && (await getTitle(url));
   };
 
   return (
@@ -96,7 +106,7 @@ const CreateMarker = props => {
               tags: foundTags ? foundTags : '',
             }}
             validate={validateValues}
-            render={({ handleSubmit, form }) => (
+            render={({ handleSubmit, form, submitError }) => (
               <form
                 className="content_edit__form"
                 onSubmit={async event => {
@@ -116,6 +126,7 @@ const CreateMarker = props => {
                     className="form__input"
                     onBlur={handleBlurUrl}
                   />
+                  {submitError && <div className="error">{submitError}</div>}
                 </div>
                 <div className="form__title">
                   <Field
