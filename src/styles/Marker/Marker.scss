@@ -1,6 +1,5 @@
 .marker {
   width: 80%;
-  height: 100px;
   display: flex;
   border: 1px solid lightgrey;
   background-color: bisque;
@@ -15,10 +14,15 @@
     .content__title {
       font-size: 20px;
       font-weight: bold;
+      margin-bottom: 4px;
     }
     .content__uri {
       overflow: hidden;
       height: 16px;
+      margin-bottom: 4px;
+    }
+    .content_tags {
+      margin-bottom: 4px;
     }
     .content__date {
       font-size: 12px;

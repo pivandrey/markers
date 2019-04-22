@@ -5,6 +5,8 @@ const initialState = {
   markers: [],
   foundMarkersByTitle: [],
   foundMarkersByTags: [],
+  foundTitle: '',
+  foundTags: '',
 };
 
 export default handleActions(
@@ -12,6 +14,8 @@ export default handleActions(
     [TYPES.ADD_MARKER]: (state, action) => ({
       ...state,
       markers: state.markers.concat(action.payload),
+      foundTitle: '',
+      foundTags: '',
     }),
     [TYPES.DELETE_MARKER]: (state, action) => ({
       ...state,
@@ -36,6 +40,19 @@ export default handleActions(
       ...state,
       foundMarkersByTitle: [],
       foundMarkersByTags: [],
+    }),
+    [TYPES.SET_TITLE]: (state, action) => ({
+      ...state,
+      foundTitle: action.payload,
+    }),
+    [TYPES.SET_TAGS]: (state, action) => ({
+      ...state,
+      foundTags: action.payload,
+    }),
+    [TYPES.RESET_AUTO_FILL]: (state, action) => ({
+      ...state,
+      foundTitle: '',
+      foundTags: '',
     }),
   },
   initialState

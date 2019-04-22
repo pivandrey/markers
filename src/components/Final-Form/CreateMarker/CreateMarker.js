@@ -1,17 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
 import { Form, Field } from 'react-final-form';
 
 const propTypes = {
   tags: PropTypes.array.isRequired,
+  foundTitle: PropTypes.string,
+  foundTags: PropTypes.string,
   addMarker: PropTypes.func.isRequired,
   createTag: PropTypes.func.isRequired,
+  getTitle: PropTypes.func.isRequired,
+  resetAutoFill: PropTypes.func.isRequired,
 };
 
 const CreateMarker = props => {
-  const { addMarker, tags, createTag } = props;
+  const {
+    addMarker,
+    tags,
+    createTag,
+    getTitle,
+    foundTitle,
+    foundTags,
+    resetAutoFill,
+  } = props;
   const [isShowCreator, handleShowCreator] = useState(false);
+  const [uri, onBlurUri] = useState('');
+  const [isValid, validateUri] = useState(false);
+
+  useEffect(() => {
+    resetAutoFill();
+  }, []);
 
   // валидация на непустую строку, превращение строки в массив,
   // проверка каждого элемента на уникальность,
@@ -19,7 +36,7 @@ const CreateMarker = props => {
 
   const handleSubmitMarker = values => {
     let newTags = [];
-    const parseTags = values.tags ? values.tags.split(';') : [];
+    const parseTags = values.tags ? values.tags.toLowerCase().split(';') : [];
     parseTags.map(newTag => {
       if (tags.length === 0) {
         newTags.push(createTag(newTag));
@@ -37,17 +54,33 @@ const CreateMarker = props => {
     });
     addMarker({ ...values, tags: newTags });
     handleShowCreator(false);
+    onBlurUri('');
   };
 
   const validateValues = values => {
     const errors = {};
-    if (!values.hasOwnProperty('uri')) {
+    if (!values.hasOwnProperty('uri') || !values.uri) {
       errors.uri = 'Enter URL';
+      validateUri(false);
+    } else if (
+      values.uri &&
+      !values.uri.match(/^(ftp|http|https):\/\/[^ "]+$/)
+    ) {
+      errors.uri = 'Enter URL';
+      validateUri(false);
+    } else {
+      validateUri(true);
     }
-    if (!values.hasOwnProperty('title')) {
+    if (!values.hasOwnProperty('title') || !values.title) {
       errors.title = 'Enter title';
     }
     return errors;
+  };
+
+  const handleBlurUrl = async e => {
+    const url = e.currentTarget.value;
+    isValid && onBlurUri(url);
+    isValid && url && (await getTitle(url));
   };
 
   return (
@@ -67,8 +100,13 @@ const CreateMarker = props => {
         <div className="create-marker__creator">
           <Form
             onSubmit={handleSubmitMarker}
+            initialValues={{
+              title: foundTitle ? foundTitle : '',
+              uri: uri,
+              tags: foundTags ? foundTags : '',
+            }}
             validate={validateValues}
-            render={({ handleSubmit, form }) => (
+            render={({ handleSubmit, form, submitError }) => (
               <form
                 className="content_edit__form"
                 onSubmit={async event => {
@@ -86,7 +124,9 @@ const CreateMarker = props => {
                     type="text"
                     placeholder="URL"
                     className="form__input"
+                    onBlur={handleBlurUrl}
                   />
+                  {submitError && <div className="error">{submitError}</div>}
                 </div>
                 <div className="form__title">
                   <Field
