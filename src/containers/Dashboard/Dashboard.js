@@ -3,11 +3,18 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { getFoundMarkersByTitle, getFoundMarkersByTags } from '../../selectors';
+import {
+  getFoundMarkersByTitle,
+  getFoundMarkersByTags,
+  getFoundTitle,
+  getFoundTags,
+} from '../../selectors';
 import {
   createMarker,
   searchMarkers,
   clearFoundMarkers,
+  getTitle,
+  resetAutoFill,
 } from '../../reducers/markers/actions';
 import { createTag } from '../../reducers/tags/actions';
 import Marker from '../Marker';
@@ -17,9 +24,12 @@ import CreateMarker from '../../components/Final-Form/CreateMarker';
 const propTypes = {
   markers: PropTypes.array.isRequired,
   tags: PropTypes.array.isRequired,
+  foundTitle: PropTypes.string,
+  foundTags: PropTypes.string,
   createMarker: PropTypes.func.isRequired,
   searchMarkers: PropTypes.func.isRequired,
   clearFoundMarkers: PropTypes.func.isRequired,
+  getTitle: PropTypes.func.isRequired,
 };
 
 const Dashboard = props => {
@@ -32,6 +42,10 @@ const Dashboard = props => {
     foundMarkersByTitle,
     foundMarkersByTags,
     clearFoundMarkers,
+    getTitle,
+    foundTitle,
+    foundTags,
+    resetAutoFill,
   } = props;
   const [searchQuery, setSearchQuery] = useState('');
   const [searchMode, changeSearchMode] = useState(false);
@@ -49,6 +63,10 @@ const Dashboard = props => {
       clearFoundMarkers();
       changeSearchMode(false);
     }
+  };
+
+  const handleResetAutoFill = () => {
+    resetAutoFill();
   };
 
   // логика отображения закладок:
@@ -79,9 +97,13 @@ const Dashboard = props => {
       </div>
       <div className="dashboard__content">
         <CreateMarker
-          addMarker={values => createMarker(values)}
           tags={tags}
+          foundTitle={foundTitle}
+          foundTags={foundTags}
+          addMarker={values => createMarker(values)}
           createTag={value => createTag(value)}
+          getTitle={url => getTitle(url)}
+          resetAutoFill={handleResetAutoFill}
         />
         {!searchMode && (
           <MarkerList
@@ -124,6 +146,8 @@ const mapStateToProps = (state, props) => ({
   tags: state.tags.tags,
   foundMarkersByTitle: getFoundMarkersByTitle(state),
   foundMarkersByTags: getFoundMarkersByTags(state),
+  foundTitle: getFoundTitle(state),
+  foundTags: getFoundTags(state),
 });
 
 const mapDispatchToProps = dispatch =>
@@ -133,6 +157,8 @@ const mapDispatchToProps = dispatch =>
       createTag,
       searchMarkers,
       clearFoundMarkers,
+      getTitle,
+      resetAutoFill,
     },
     dispatch
   );

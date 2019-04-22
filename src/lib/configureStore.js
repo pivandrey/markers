@@ -14,5 +14,11 @@ export const store = createStore(
 );
 
 store.subscribe(() => {
-  localStorage.setItem('reduxState', JSON.stringify(store.getState()));
+  localStorage.setItem(
+    'reduxState',
+    JSON.stringify({
+      markers: store.getState().markers,
+      tags: store.getState().tags,
+    })
+  );
 });

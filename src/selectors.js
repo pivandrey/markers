@@ -8,6 +8,8 @@ export const getMarker = () =>
     [getMarkers, getMarkerIdFromProps],
     (markers, markerId) => markers.filter(marker => marker.id === markerId)[0]
   );
+export const getFoundTitle = state => state.markers.foundTitle;
+export const getFoundTags = state => state.markers.foundTags;
 
 // Tags
 export const getTags = state => state.tags.tags;
